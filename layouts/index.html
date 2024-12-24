@@ -1,6 +1,8 @@
 {{ define "main" -}}
+{{ $frontPageTypes := default (slice "posts") .Site.Params.front_page_content }}
+
+{{ if (.Paginate (where .Site.RegularPages "Type" "in" $frontPageTypes)).Pages }}
 <div class="posts">
-    {{ $frontPageTypes := default (slice "posts") .Site.Params.front_page_content }}
     {{ range (.Paginate (where .Site.RegularPages "Type" "in" $frontPageTypes)).Pages }}
     <article class="post">
         {{ partial "post/info.html" . }}
@@ -17,5 +19,12 @@
     </article>
     {{- end }}
 </div>
+{{ else }}
+<div class="post">
+    {{ $content := .Site.GetPage (index $frontPageTypes 0) }}
+    <h1>{{ $content.Title }}</h1>
+    {{ $content.Content }}
+{{ end }}
+
 {{ partial "pagination.html" . }}
 {{- end }}
